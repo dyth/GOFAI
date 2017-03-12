@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""script to generate `sudoku.py` for a 3 * 3 grid"""
+"""script to generate `sudoku.py` for a 9 * 9 grid"""
 
 def board():
     'return string of all board variables'
