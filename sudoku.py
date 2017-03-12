@@ -9,29 +9,29 @@ def board():
     return board
 
 
-def rows(board):
+def rows():
     'return list of list of tile indexes representing all rows'
     rows = []
     for i in range(9):
         nestedRow = []
         for j in range(9):
-            nestedRow.append(board[9*i + j])
+            nestedRow.append(9*i + j)
         rows.append(nestedRow)
     return rows
 
 
-def columns(board):
+def columns():
     'return list of list of tile indexes representing all columns'
     columns = []
     for i in range(9):
         nestedColumn = []
         for j in range(9):
-            nestedColumn.append(board[9*j + i])
+            nestedColumn.append(9*j + i)
         columns.append(nestedColumn)
     return columns
 
 
-def boxes(board):
+def boxes():
     'return list of list of tile indexes representing all boxes'
     boxes = []
     for x in range(3):
@@ -39,17 +39,59 @@ def boxes(board):
             nestedBox = []
             for i in range(3):
                 for j in range(3):
-                    nestedBox.append(board[27*y + 9*i + 3*x + j])
+                    nestedBox.append(27*y + 9*i + 3*x + j)
             boxes.append(nestedBox)
     return boxes
 
 
-board = board()
-rows = rows(board)
-columns = columns(board)
-boxes = boxes(board)
+def toStatement(board):
+    'convert a board list into a string for Prolog'
+    prolog = ''
+    for b in board:
+        prolog += 'H' + str(b) + ", "
+    return prolog[:-2]
 
-print board
-print rows
-print columns
-print boxes
+
+def toConstraints(board, constraints):
+    'convert a declaration and its constraints into a prolog relation'
+    relation = ''
+    relation += '([' + board + ']) :- '
+    for c in constraints:
+        relation += 'diff([' + str(c) + ']), '
+    return relation[:-2]
+    
+
+# create a board and its constraints
+board = board()
+rows = rows()
+columns = columns()
+boxes = boxes()
+
+# convert lists into prolog strings
+board = toStatement(board)
+rows = [toStatement(r) for r in rows]
+columns = [toStatement(c) for c in columns]
+boxes = [toStatement(b) for b in boxes]
+
+# output prolog relations
+rows = toConstraints(board, rows)
+columns = toConstraints(board, columns)
+boxes = toConstraints(board, boxes)
+
+# formatting for relations
+rows = 'rows' + rows + '.\n\n'
+columns = 'columns' + columns + '.\n\n'
+boxes = 'boxes' + boxes + '.\n\n'
+
+# create a file called sudoku.pl with all of the constraints 
+sudokuFile = open("sudoku.pl", "w") 
+sudokuFile.write(":- use_module(library(bounds)).\n\n")
+sudokuFile.write("diff(L) :- L in 1..9, all_different(L).\n\n")
+sudokuFile.write(rows)
+sudokuFile.write(columns)
+sudokuFile.write(boxes)
+sudokuFile.write("sudoku(L) :- rows(L), columns(L), boxes(L), label(L).")
+sudokuFile.close()
+
+print "The program can be queried using the following command, with some of the tile coordinates changed:"
+print "sudoku([" + board + "])."
