@@ -1,10 +1,18 @@
 #!/usr/bin/env python
-"""noughts and crosses in Python"""
-import numpy as np
+"""player, winning and move conditions for noughts and crosses"""
 import copy
 
-initial_board = [None, None, None, None, None, None, None, None, None]
+
+# game information
+initialBoard = [None, None, None, None, None, None, None, None, None]
 players = [0, 1]
+
+
+
+def nextPlayer(x):
+    'return the identity of the next player'
+    return (x + 1) % 2
+
 
 def move(player, board, pos1, pos2):
     'board[pos1][pos2] = player'
@@ -16,9 +24,24 @@ def move(player, board, pos1, pos2):
     else:
         return None
 
+    
+def moveAll(player, board):
+    'return list of all possible next boards : a list list'
+    moves = []
+    for i in range(9):
+        moved = copy.deepcopy(board)
+        if (moved == None):
+            return
+        if (moved[i] == None):
+            moved[i] = player
+            moves.append(moved)
+        else:
+            moves.append(None)
+    return moves
 
-def win(board):
-    'determine if there is a winner in the board'
+    
+def evaluate(board):
+    'evaluate if there is a winner in the board'
     winner = [7, 56, 73, 84, 146, 273, 292, 448]
     for player in players:
         state = 0
@@ -26,13 +49,3 @@ def win(board):
             state += (int(board[i] == player) << i)
         if not set([state & w for w in winner]).isdisjoint(winner):
             return player
-
-
-
-class node:
-    'node within a tree where moves can be made'
-
-    def __init__(self, board, moves):
-        'initialise new node with a board'
-        self.board = board
-        self.moves = moves
