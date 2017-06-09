@@ -2,24 +2,28 @@
 """the minimax procedure with alpha beta pruning"""
 from noughtsCrosses import *
 
+x = 0
 
 class node:
     'a node in a list tree'
 
-    def __init__(self, board, moves, player):
+    def __init__(self, player, board):
         'initialise new node with a board'
+        # set conditions
         self.board = board
         self.player = player
         self.winner = evaluate(board)
-        if not self.winner:
-            self.next = nextPlayer(self.player)
-            self.moves = [node(move, moveAll(move, self.next), self.next)
-                              if (move != None) else None
-                          for move in moves]
 
-
+        global x
+        x += 1
         
-me = node(initialBoard, moveAll(1, initialBoard), 1)
-print me
+        # if a winner does not exist, swap the players and do all possible moves
+        if self.winner == None:
+            self.next = nextPlayer(self.player)
+            self.moves = [node(self.next, move) if (move != None) else None
+                          for move in moveAll(self.next, self.board)]
 
-print moveAll(1, initialBoard)
+
+
+me = node(1, initialBoard)
+print x
