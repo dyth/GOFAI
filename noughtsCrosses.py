@@ -11,7 +11,7 @@ players = [0, 1]
 
 def nextPlayer(x):
     'return the identity of the next player'
-    return (x + 1) % 2
+    return players[(players.index(x) + 1) % 2]
 
 
 def move(player, board, pos1, pos2):
